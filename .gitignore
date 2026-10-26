@@ -1,0 +1,17 @@
+node_modules/
+.next/
+*.tsbuildinfo
+.venv/
+__pycache__/
+.DS_Store
+.env*
+AGENTS.md
+CLAUDE.md
+.claude/
+ml/data/
+ml/out_v1/
+ml/out_v2/
+ml/out_v3/
+ml/*.log
+clearsight/public/mediapipe/wasm/
+clearsight/public/ort/

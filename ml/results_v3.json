@@ -1,0 +1,1078 @@
+{
+ "raw_counts": {
+  "roboflow/Allergic Conj": 1584,
+  "roboflow/Bacterial Conj": 1057,
+  "roboflow/Blepharitis": 1428,
+  "roboflow/Cataract": 1579,
+  "roboflow/Glaucoma": 424,
+  "roboflow/Healthy": 1472,
+  "roboflow/Pinguecula": 366,
+  "roboflow/Stye": 1686,
+  "roboflow/Uveitis": 529,
+  "roboflow/Viral Conj": 1651,
+  "roboflow/Xanthelasma": 1244,
+  "roboflow/pterygium": 1715,
+  "mendeley/Cataract": 544,
+  "mendeley/Conjunctivitis": 357,
+  "mendeley/Mendeley Eyelid drooping": 525,
+  "mendeley/Normal": 649,
+  "mendeley/Uveitis": 223
+ },
+ "dup": {
+  "within_roboflow_removed": 8208,
+  "groups_with_conflicting_labels": 407,
+  "across_removed": 3075,
+  "within_mendeley_removed": 600,
+  "dropped_glaucoma_images": 424
+ },
+ "pinguecula": "kept separate (178>=150)",
+ "labels": [
+  "Blepharitis",
+  "Cataract",
+  "Conjunctivitis",
+  "Normal",
+  "Pinguecula",
+  "Pterygium",
+  "Stye",
+  "Uveitis",
+  "Xanthelasma"
+ ],
+ "final_counts": {
+  "Blepharitis": 458,
+  "Cataract": 422,
+  "Conjunctivitis": 1355,
+  "Normal": 719,
+  "Pinguecula": 178,
+  "Pterygium": 475,
+  "Stye": 543,
+  "Uveitis": 296,
+  "Xanthelasma": 280
+ },
+ "final_counts_by_source": {
+  "Blepharitis": {
+   "roboflow": 181,
+   "mendeley": 277
+  },
+  "Cataract": {
+   "roboflow": 74,
+   "mendeley": 348
+  },
+  "Conjunctivitis": {
+   "roboflow": 1100,
+   "mendeley": 255
+  },
+  "Normal": {
+   "roboflow": 476,
+   "mendeley": 243
+  },
+  "Pinguecula": {
+   "roboflow": 178,
+   "mendeley": 0
+  },
+  "Pterygium": {
+   "roboflow": 475,
+   "mendeley": 0
+  },
+  "Stye": {
+   "roboflow": 543,
+   "mendeley": 0
+  },
+  "Uveitis": {
+   "roboflow": 161,
+   "mendeley": 135
+  },
+  "Xanthelasma": {
+   "roboflow": 280,
+   "mendeley": 0
+  }
+ },
+ "split": [
+  3319,
+  703,
+  704
+ ],
+ "split_per_class": {
+  "Blepharitis": [
+   331,
+   63,
+   64
+  ],
+  "Cataract": [
+   294,
+   61,
+   67
+  ],
+  "Conjunctivitis": [
+   948,
+   204,
+   203
+  ],
+  "Normal": [
+   511,
+   107,
+   101
+  ],
+  "Pinguecula": [
+   125,
+   27,
+   26
+  ],
+  "Pterygium": [
+   331,
+   70,
+   74
+  ],
+  "Stye": [
+   378,
+   86,
+   79
+  ],
+  "Uveitis": [
+   207,
+   42,
+   47
+  ],
+  "Xanthelasma": [
+   194,
+   43,
+   43
+  ]
+ },
+ "audit": {
+  "Blepharitis|mendeley": {
+   "n": 277,
+   "median_short_side": 162.0,
+   "frac_square": 0.0,
+   "mean_black_corner_frac": 0.006167268351383875,
+   "mean_sharpness": 4.205847216215654
+  },
+  "Blepharitis|roboflow": {
+   "n": 181,
+   "median_short_side": 300.0,
+   "frac_square": 1.0,
+   "mean_black_corner_frac": 0.21150821055862495,
+   "mean_sharpness": 3.9807044597067334
+  },
+  "Cataract|mendeley": {
+   "n": 348,
+   "median_short_side": 187.0,
+   "frac_square": 0.0028735632183908046,
+   "mean_black_corner_frac": 0.006350774265644956,
+   "mean_sharpness": 3.9594585514737823
+  },
+  "Cataract|roboflow": {
+   "n": 74,
+   "median_short_side": 300.0,
+   "frac_square": 1.0,
+   "mean_black_corner_frac": 0.11331644144144143,
+   "mean_sharpness": 3.366789956195786
+  },
+  "Conjunctivitis|mendeley": {
+   "n": 255,
+   "median_short_side": 252.0,
+   "frac_square": 0.00784313725490196,
+   "mean_black_corner_frac": 0.002001633986928105,
+   "mean_sharpness": 4.387178043863285
+  },
+  "Conjunctivitis|roboflow": {
+   "n": 1100,
+   "median_short_side": 300.0,
+   "frac_square": 1.0,
+   "mean_black_corner_frac": 0.04258364898989899,
+   "mean_sharpness": 4.879685261487392
+  },
+  "Normal|mendeley": {
+   "n": 243,
+   "median_short_side": 58.0,
+   "frac_square": 1.0,
+   "mean_black_corner_frac": 0.0017861225422953816,
+   "mean_sharpness": 1.9004173224402425
+  },
+  "Normal|roboflow": {
+   "n": 476,
+   "median_short_side": 300.0,
+   "frac_square": 1.0,
+   "mean_black_corner_frac": 0.009406366713352007,
+   "mean_sharpness": 4.911430183059771
+  },
+  "Pinguecula|roboflow": {
+   "n": 178,
+   "median_short_side": 300.0,
+   "frac_square": 1.0,
+   "mean_black_corner_frac": 0.039852528089887644,
+   "mean_sharpness": 3.8057211327368656
+  },
+  "Pterygium|roboflow": {
+   "n": 475,
+   "median_short_side": 300.0,
+   "frac_square": 1.0,
+   "mean_black_corner_frac": 0.13800073099415205,
+   "mean_sharpness": 4.270096176540005
+  },
+  "Stye|roboflow": {
+   "n": 543,
+   "median_short_side": 300.0,
+   "frac_square": 1.0,
+   "mean_black_corner_frac": 0.16263812154696133,
+   "mean_sharpness": 3.9881645864376023
+  },
+  "Uveitis|mendeley": {
+   "n": 135,
+   "median_short_side": 211.0,
+   "frac_square": 0.007407407407407408,
+   "mean_black_corner_frac": 0.006905864197530864,
+   "mean_sharpness": 5.222995557216409
+  },
+  "Uveitis|roboflow": {
+   "n": 161,
+   "median_short_side": 300.0,
+   "frac_square": 1.0,
+   "mean_black_corner_frac": 0.12691942719116633,
+   "mean_sharpness": 5.210234122894625
+  },
+  "Xanthelasma|roboflow": {
+   "n": 280,
+   "median_short_side": 300.0,
+   "frac_square": 1.0,
+   "mean_black_corner_frac": 0.030660962301587304,
+   "mean_sharpness": 2.6698659284341537
+  }
+ },
+ "cross_source": {
+  "train_roboflow_test_mendeley": {
+   "same_source_heldout_asis": {
+    "n": 248,
+    "acc": 0.7338709677419355,
+    "macro_f1": 0.6929312304631998,
+    "per_class_recall": {
+     "Normal": 0.9032258064516129,
+     "Cataract": 0.7272727272727273,
+     "Conjunctivitis": 0.7,
+     "Uveitis": 0.52
+    },
+    "counts": {
+     "Normal": 62,
+     "Cataract": 11,
+     "Conjunctivitis": 150,
+     "Uveitis": 25
+    }
+   },
+   "same_source_heldout_forced64": {
+    "n": 248,
+    "acc": 0.7540322580645161,
+    "macro_f1": 0.7057809665182253,
+    "per_class_recall": {
+     "Normal": 0.8548387096774194,
+     "Cataract": 0.7272727272727273,
+     "Conjunctivitis": 0.7533333333333333,
+     "Uveitis": 0.52
+    },
+    "counts": {
+     "Normal": 62,
+     "Cataract": 11,
+     "Conjunctivitis": 150,
+     "Uveitis": 25
+    }
+   },
+   "other_source_asis": {
+    "n": 591,
+    "acc": 0.6802030456852792,
+    "macro_f1": 0.48776049739774924,
+    "per_class_recall": {
+     "Normal": 0.9008264462809917,
+     "Cataract": 0.14035087719298245,
+     "Conjunctivitis": 0.7793427230046949,
+     "Uveitis": 0.12658227848101267
+    },
+    "counts": {
+     "Normal": 242,
+     "Cataract": 57,
+     "Conjunctivitis": 213,
+     "Uveitis": 79
+    }
+   },
+   "other_source_forced64": {
+    "n": 591,
+    "acc": 0.6751269035532995,
+    "macro_f1": 0.498103211789455,
+    "per_class_recall": {
+     "Normal": 0.8842975206611571,
+     "Cataract": 0.15789473684210525,
+     "Conjunctivitis": 0.7652582159624414,
+     "Uveitis": 0.16455696202531644
+    },
+    "counts": {
+     "Normal": 242,
+     "Cataract": 57,
+     "Conjunctivitis": 213,
+     "Uveitis": 79
+    }
+   },
+   "train_n": 1218,
+   "train_counts": {
+    "Normal": 318,
+    "Cataract": 53,
+    "Conjunctivitis": 739,
+    "Uveitis": 108
+   }
+  },
+  "train_mendeley_test_roboflow": {
+   "same_source_heldout_asis": {
+    "n": 85,
+    "acc": 0.8588235294117647,
+    "macro_f1": 0.7322649572649572,
+    "per_class_recall": {
+     "Normal": 1.0,
+     "Cataract": 0.3333333333333333,
+     "Conjunctivitis": 1.0,
+     "Uveitis": 0.5
+    },
+    "counts": {
+     "Normal": 34,
+     "Cataract": 9,
+     "Conjunctivitis": 30,
+     "Uveitis": 12
+    }
+   },
+   "same_source_heldout_forced64": {
+    "n": 85,
+    "acc": 0.8470588235294118,
+    "macro_f1": 0.7440476190476191,
+    "per_class_recall": {
+     "Normal": 1.0,
+     "Cataract": 0.4444444444444444,
+     "Conjunctivitis": 0.9333333333333333,
+     "Uveitis": 0.5
+    },
+    "counts": {
+     "Normal": 34,
+     "Cataract": 9,
+     "Conjunctivitis": 30,
+     "Uveitis": 12
+    }
+   },
+   "other_source_asis": {
+    "n": 1718,
+    "acc": 0.46565774155995343,
+    "macro_f1": 0.3345474440301257,
+    "per_class_recall": {
+     "Normal": 0.1729490022172949,
+     "Cataract": 0.581081081081081,
+     "Conjunctivitis": 0.5984630163304515,
+     "Uveitis": 0.3684210526315789
+    },
+    "counts": {
+     "Normal": 451,
+     "Cataract": 74,
+     "Conjunctivitis": 1041,
+     "Uveitis": 152
+    }
+   },
+   "other_source_forced64": {
+    "n": 1718,
+    "acc": 0.42724097788125726,
+    "macro_f1": 0.3523001897497777,
+    "per_class_recall": {
+     "Normal": 0.3348115299334812,
+     "Cataract": 0.5405405405405406,
+     "Conjunctivitis": 0.45341018251681076,
+     "Uveitis": 0.46710526315789475
+    },
+    "counts": {
+     "Normal": 451,
+     "Cataract": 74,
+     "Conjunctivitis": 1041,
+     "Uveitis": 152
+    }
+   },
+   "train_n": 421,
+   "train_counts": {
+    "Normal": 173,
+    "Cataract": 40,
+    "Conjunctivitis": 152,
+    "Uveitis": 56
+   }
+  }
+ },
+ "main_epochs": 18,
+ "best_val_f1_64px": 0.8029353944733525,
+ "temperature": 1.690840244293213,
+ "val_nll_before_after": [
+  0.5802852511405945,
+  0.500378429889679
+ ],
+ "test": {
+  "asis_resize224": {
+   "acc": 0.8210227272727273,
+   "macro_f1": 0.8293066912148913,
+   "report": {
+    "Blepharitis": {
+     "precision": 0.7666666666666667,
+     "recall": 0.71875,
+     "f1-score": 0.7419354838709677,
+     "support": 64.0
+    },
+    "Cataract": {
+     "precision": 0.9393939393939394,
+     "recall": 0.9253731343283582,
+     "f1-score": 0.9323308270676691,
+     "support": 67.0
+    },
+    "Conjunctivitis": {
+     "precision": 0.8315217391304348,
+     "recall": 0.7536945812807881,
+     "f1-score": 0.7906976744186046,
+     "support": 203.0
+    },
+    "Normal": {
+     "precision": 0.788135593220339,
+     "recall": 0.9207920792079208,
+     "f1-score": 0.8493150684931506,
+     "support": 101.0
+    },
+    "Pinguecula": {
+     "precision": 0.9629629629629629,
+     "recall": 1.0,
+     "f1-score": 0.9811320754716981,
+     "support": 26.0
+    },
+    "Pterygium": {
+     "precision": 0.9466666666666667,
+     "recall": 0.9594594594594594,
+     "f1-score": 0.9530201342281879,
+     "support": 74.0
+    },
+    "Stye": {
+     "precision": 0.7875,
+     "recall": 0.7974683544303798,
+     "f1-score": 0.7924528301886793,
+     "support": 79.0
+    },
+    "Uveitis": {
+     "precision": 0.45098039215686275,
+     "recall": 0.48936170212765956,
+     "f1-score": 0.46938775510204084,
+     "support": 47.0
+    },
+    "Xanthelasma": {
+     "precision": 0.9534883720930233,
+     "recall": 0.9534883720930233,
+     "f1-score": 0.9534883720930233,
+     "support": 43.0
+    },
+    "accuracy": 0.8210227272727273,
+    "macro avg": {
+     "precision": 0.8252573702545439,
+     "recall": 0.8353764092141766,
+     "f1-score": 0.8293066912148913,
+     "support": 704.0
+    },
+    "weighted avg": {
+     "precision": 0.8237295701229205,
+     "recall": 0.8210227272727273,
+     "f1-score": 0.8209380797953301,
+     "support": 704.0
+    }
+   },
+   "cm": [
+    [
+     46,
+     0,
+     2,
+     2,
+     0,
+     1,
+     11,
+     2,
+     0
+    ],
+    [
+     0,
+     62,
+     0,
+     4,
+     0,
+     0,
+     0,
+     1,
+     0
+    ],
+    [
+     4,
+     1,
+     153,
+     12,
+     1,
+     2,
+     4,
+     24,
+     2
+    ],
+    [
+     2,
+     3,
+     2,
+     93,
+     0,
+     0,
+     1,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0,
+     0,
+     26,
+     0,
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     2,
+     0,
+     0,
+     71,
+     0,
+     1,
+     0
+    ],
+    [
+     8,
+     0,
+     6,
+     2,
+     0,
+     0,
+     63,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     18,
+     4,
+     0,
+     1,
+     1,
+     23,
+     0
+    ],
+    [
+     0,
+     0,
+     1,
+     1,
+     0,
+     0,
+     0,
+     0,
+     41
+    ]
+   ],
+   "logits": null
+  },
+  "centercrop224_nodegrade": {
+   "acc": 0.8309659090909091,
+   "macro_f1": 0.8388470031269407,
+   "report": {
+    "Blepharitis": {
+     "precision": 0.78125,
+     "recall": 0.78125,
+     "f1-score": 0.78125,
+     "support": 64.0
+    },
+    "Cataract": {
+     "precision": 0.9402985074626866,
+     "recall": 0.9402985074626866,
+     "f1-score": 0.9402985074626866,
+     "support": 67.0
+    },
+    "Conjunctivitis": {
+     "precision": 0.8378378378378378,
+     "recall": 0.7635467980295566,
+     "f1-score": 0.7989690721649485,
+     "support": 203.0
+    },
+    "Normal": {
+     "precision": 0.7948717948717948,
+     "recall": 0.9207920792079208,
+     "f1-score": 0.8532110091743119,
+     "support": 101.0
+    },
+    "Pinguecula": {
+     "precision": 0.9629629629629629,
+     "recall": 1.0,
+     "f1-score": 0.9811320754716981,
+     "support": 26.0
+    },
+    "Pterygium": {
+     "precision": 0.9594594594594594,
+     "recall": 0.9594594594594594,
+     "f1-score": 0.9594594594594594,
+     "support": 74.0
+    },
+    "Stye": {
+     "precision": 0.7875,
+     "recall": 0.7974683544303798,
+     "f1-score": 0.7924528301886793,
+     "support": 79.0
+    },
+    "Uveitis": {
+     "precision": 0.48936170212765956,
+     "recall": 0.48936170212765956,
+     "f1-score": 0.48936170212765956,
+     "support": 47.0
+    },
+    "Xanthelasma": {
+     "precision": 0.9534883720930233,
+     "recall": 0.9534883720930233,
+     "f1-score": 0.9534883720930233,
+     "support": 43.0
+    },
+    "accuracy": 0.8309659090909091,
+    "macro avg": {
+     "precision": 0.8341145152017138,
+     "recall": 0.8450739192011874,
+     "f1-score": 0.8388470031269407,
+     "support": 704.0
+    },
+    "weighted avg": {
+     "precision": 0.8318361781252406,
+     "recall": 0.8309659090909091,
+     "f1-score": 0.8302247743228123,
+     "support": 704.0
+    }
+   },
+   "cm": [
+    [
+     50,
+     0,
+     1,
+     1,
+     0,
+     0,
+     11,
+     1,
+     0
+    ],
+    [
+     0,
+     63,
+     0,
+     3,
+     0,
+     0,
+     0,
+     1,
+     0
+    ],
+    [
+     4,
+     1,
+     155,
+     13,
+     1,
+     2,
+     4,
+     21,
+     2
+    ],
+    [
+     2,
+     3,
+     2,
+     93,
+     0,
+     0,
+     1,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0,
+     0,
+     26,
+     0,
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     2,
+     0,
+     0,
+     71,
+     0,
+     1,
+     0
+    ],
+    [
+     8,
+     0,
+     6,
+     2,
+     0,
+     0,
+     63,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     18,
+     4,
+     0,
+     1,
+     1,
+     23,
+     0
+    ],
+    [
+     0,
+     0,
+     1,
+     1,
+     0,
+     0,
+     0,
+     0,
+     41
+    ]
+   ],
+   "logits": null
+  },
+  "forced_64px_down_up": {
+   "acc": 0.8110795454545454,
+   "macro_f1": 0.8234427532951533,
+   "report": {
+    "Blepharitis": {
+     "precision": 0.6875,
+     "recall": 0.6875,
+     "f1-score": 0.6875,
+     "support": 64.0
+    },
+    "Cataract": {
+     "precision": 0.9130434782608695,
+     "recall": 0.9402985074626866,
+     "f1-score": 0.9264705882352942,
+     "support": 67.0
+    },
+    "Conjunctivitis": {
+     "precision": 0.8465909090909091,
+     "recall": 0.7339901477832512,
+     "f1-score": 0.7862796833773087,
+     "support": 203.0
+    },
+    "Normal": {
+     "precision": 0.8035714285714286,
+     "recall": 0.8910891089108911,
+     "f1-score": 0.8450704225352113,
+     "support": 101.0
+    },
+    "Pinguecula": {
+     "precision": 0.9629629629629629,
+     "recall": 1.0,
+     "f1-score": 0.9811320754716981,
+     "support": 26.0
+    },
+    "Pterygium": {
+     "precision": 0.9342105263157895,
+     "recall": 0.9594594594594594,
+     "f1-score": 0.9466666666666667,
+     "support": 74.0
+    },
+    "Stye": {
+     "precision": 0.7468354430379747,
+     "recall": 0.7468354430379747,
+     "f1-score": 0.7468354430379747,
+     "support": 79.0
+    },
+    "Uveitis": {
+     "precision": 0.46551724137931033,
+     "recall": 0.574468085106383,
+     "f1-score": 0.5142857142857142,
+     "support": 47.0
+    },
+    "Xanthelasma": {
+     "precision": 0.9767441860465116,
+     "recall": 0.9767441860465116,
+     "f1-score": 0.9767441860465116,
+     "support": 43.0
+    },
+    "accuracy": 0.8110795454545454,
+    "macro avg": {
+     "precision": 0.8152195750739728,
+     "recall": 0.8344872153119065,
+     "f1-score": 0.8234427532951533,
+     "support": 704.0
+    },
+    "weighted avg": {
+     "precision": 0.8171029946077843,
+     "recall": 0.8110795454545454,
+     "f1-score": 0.8121798489778989,
+     "support": 704.0
+    }
+   },
+   "cm": [
+    [
+     44,
+     0,
+     1,
+     1,
+     0,
+     1,
+     15,
+     2,
+     0
+    ],
+    [
+     0,
+     63,
+     0,
+     3,
+     0,
+     0,
+     0,
+     1,
+     0
+    ],
+    [
+     4,
+     1,
+     149,
+     14,
+     1,
+     2,
+     4,
+     27,
+     1
+    ],
+    [
+     2,
+     4,
+     4,
+     90,
+     0,
+     0,
+     1,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0,
+     0,
+     26,
+     0,
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     2,
+     0,
+     0,
+     71,
+     0,
+     1,
+     0
+    ],
+    [
+     13,
+     0,
+     6,
+     1,
+     0,
+     0,
+     59,
+     0,
+     0
+    ],
+    [
+     1,
+     1,
+     14,
+     2,
+     0,
+     2,
+     0,
+     27,
+     0
+    ],
+    [
+     0,
+     0,
+     0,
+     1,
+     0,
+     0,
+     0,
+     0,
+     42
+    ]
+   ],
+   "logits": null
+  },
+  "all_rotated_12deg_blackfill": {
+   "acc": 0.8295454545454546,
+   "macro_f1": 0.8376504264855318
+  }
+ },
+ "v2_vs_v3_rf_only_4class": {
+  "n": 259,
+  "v2_acc": 0.42857142857142855,
+  "v3_acc": 0.8146718146718147
+ },
+ "test_by_source_asis": {
+  "roboflow": {
+   "n": 520,
+   "acc": 0.823076923076923
+  },
+  "mendeley": {
+   "n": 184,
+   "acc": 0.8152173913043478
+  }
+ },
+ "confidence_raw": {
+  "mean_conf": 0.8939054608345032,
+  "acc": 0.8210227272727273,
+  "ece": 0.07317495413801885,
+  "hist": [
+   0,
+   0,
+   0,
+   5,
+   15,
+   44,
+   46,
+   46,
+   70,
+   478
+  ],
+  "mean_conf_correct": 0.9286410212516785,
+  "mean_conf_wrong": 0.7345627546310425,
+  "frac_wrong_conf_above_0p8": 0.373015873015873
+ },
+ "confidence_temp_scaled": {
+  "mean_conf": 0.8217886090278625,
+  "acc": 0.8210227272727273,
+  "ece": 0.022257376716218216,
+  "hist": [
+   0,
+   0,
+   2,
+   15,
+   43,
+   66,
+   73,
+   61,
+   82,
+   362
+  ],
+  "mean_conf_correct": 0.8655737638473511,
+  "mean_conf_wrong": 0.620932936668396,
+  "frac_wrong_conf_above_0p8": 0.19047619047619047
+ },
+ "normal_check": {
+  "n_normal_test": 101,
+  "all_normal_asis": {
+   "Blepharitis": 2,
+   "Cataract": 3,
+   "Conjunctivitis": 2,
+   "Normal": 93,
+   "Pinguecula": 0,
+   "Pterygium": 0,
+   "Stye": 1,
+   "Uveitis": 0,
+   "Xanthelasma": 0
+  },
+  "all_normal_64px": {
+   "Blepharitis": 2,
+   "Cataract": 4,
+   "Conjunctivitis": 4,
+   "Normal": 90,
+   "Pinguecula": 0,
+   "Pterygium": 0,
+   "Stye": 1,
+   "Uveitis": 0,
+   "Xanthelasma": 0
+  },
+  "sample20_asis": {
+   "Blepharitis": 1,
+   "Cataract": 0,
+   "Conjunctivitis": 0,
+   "Normal": 19,
+   "Pinguecula": 0,
+   "Pterygium": 0,
+   "Stye": 0,
+   "Uveitis": 0,
+   "Xanthelasma": 0
+  },
+  "sample20_64px": {
+   "Blepharitis": 1,
+   "Cataract": 1,
+   "Conjunctivitis": 0,
+   "Normal": 18,
+   "Pinguecula": 0,
+   "Pterygium": 0,
+   "Stye": 0,
+   "Uveitis": 0,
+   "Xanthelasma": 0
+  },
+  "sample20_sources": {
+   "roboflow": 11,
+   "mendeley": 9
+  },
+  "normal_test_sources": {
+   "roboflow": 65,
+   "mendeley": 36
+  }
+ },
+ "conj_subtype_pred": {
+  "Allergic Conj": {
+   "Uveitis": 6,
+   "Conjunctivitis": 58,
+   "Pinguecula": 1,
+   "Normal": 4,
+   "Blepharitis": 1,
+   "Stye": 2,
+   "Cataract": 1
+  },
+  "Conjunctivitis": {
+   "Uveitis": 5,
+   "Pterygium": 1,
+   "Conjunctivitis": 32
+  },
+  "Bacterial Conj": {
+   "Conjunctivitis": 29,
+   "Blepharitis": 2,
+   "Normal": 2,
+   "Xanthelasma": 2,
+   "Uveitis": 2
+  },
+  "Viral Conj": {
+   "Stye": 2,
+   "Conjunctivitis": 34,
+   "Uveitis": 11,
+   "Pterygium": 1,
+   "Normal": 6,
+   "Blepharitis": 1
+  }
+ },
+ "onnx_mb": 6.117937,
+ "onnx_maxdiff": 1.0013580322265625e-05
+}
