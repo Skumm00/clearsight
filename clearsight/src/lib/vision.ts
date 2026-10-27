@@ -48,67 +48,38 @@ export function interpretAcuity(logMAR: number): { band: AcuityBand; message: st
   return { band: "reduced", message: "Below typical for this screening. A professional eye exam is recommended." };
 }
 
+/** Short letter-size procedure: each right answer makes the letter smaller, each miss makes it larger. */
 export class Staircase {
   level: number;
-  private readonly step: number;
-  private readonly min: number;
-  private readonly max: number;
-  private streak = 0;
-  private lastDir: 1 | -1 | 0 = 0;
-  reversals: number[] = [];
   trials = 0;
-
-  private readonly maxReversals: number;
-  private readonly maxTrials: number;
-
   private bestCorrect: number | null = null;
 
   constructor(
-    start = 0.8,
-    step = 0.1,
-    min = -0.2,
-    max = 1.3,
-    maxReversals = 6,
-    maxTrials = 24,
-    private readonly downNeeded = 2,
-    private readonly useBest = false,
+    start = 0.6,
+    private readonly step = 0.2,
+    private readonly min = -0.2,
+    private readonly max = 1.3,
+    private readonly maxTrials = 4,
   ) {
     this.level = start;
-    this.step = step;
-    this.min = min;
-    this.max = max;
-    this.maxReversals = maxReversals;
-    this.maxTrials = maxTrials;
   }
 
+  /** Records an answer and returns true once all questions have been asked. */
   respond(correct: boolean): boolean {
     this.trials++;
-    const asked = this.level;
-    let dir: 1 | -1 | 0 = 0;
     if (correct) {
-      this.streak++;
-      if (this.bestCorrect === null || asked < this.bestCorrect) this.bestCorrect = asked;
-      if (this.streak >= this.downNeeded) {
-        this.streak = 0;
-        dir = -1;
-      }
+      if (this.bestCorrect === null || this.level < this.bestCorrect) this.bestCorrect = this.level;
+      this.level -= this.step;
     } else {
-      this.streak = 0;
-      dir = 1;
+      this.level += this.step;
     }
-    if (dir !== 0) {
-      if (this.lastDir !== 0 && dir !== this.lastDir) this.reversals.push(this.level);
-      this.lastDir = dir;
-      this.level = Math.min(this.max, Math.max(this.min, +(this.level + dir * this.step).toFixed(2)));
-    }
-    return this.reversals.length >= this.maxReversals || this.trials >= this.maxTrials;
+    this.level = +Math.min(this.max, Math.max(this.min, this.level)).toFixed(2);
+    return this.trials >= this.maxTrials;
   }
 
+  /** The smallest letter answered correctly, or the current level if none were. */
   threshold(): number {
-    if (this.useBest) return +(this.bestCorrect ?? this.level).toFixed(2);
-    const r = this.reversals.slice(-4);
-    if (r.length === 0) return this.level;
-    return +(r.reduce((a, b) => a + b, 0) / r.length).toFixed(2);
+    return +(this.bestCorrect ?? this.level).toFixed(2);
   }
 }
 

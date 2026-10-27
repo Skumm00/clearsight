@@ -31,8 +31,6 @@ const START_MAX_MM = 1100;
 const PAUSE_BELOW = 0.7;
 const PAUSE_ABOVE = 1.5;
 const RESIZE_AFTER = 0.1;
-const makeStaircase = () => new Staircase(0.6, 0.2, -0.2, 1.3, 99, 4, 1, true);
-
 const PAUSE_DELAY_MS = 1500;
 const SQUINT_THRESHOLD = 1 - SQUINT_RATIO;
 const ARROWS: { dir: Direction; icon: typeof ArrowUp }[] = [
@@ -82,11 +80,6 @@ export default function AcuityTest() {
     return () => clearTimeout(t);
   }, [squinting]);
 
-  useEffect(() => {
-    stair.current = makeStaircase();
-    setLevel(stair.current.level);
-  }, []);
-
   const rawProblem = useMemo(() => {
     if (state.status !== "ready") return null;
     if (!state.faceFound) return "Face not found";
@@ -120,7 +113,7 @@ export default function AcuityTest() {
     setResults((r) => ({ ...r, [eye]: entry }));
     saveResults({ acuity: { ...loadResults().acuity, [eye]: entry } });
     if (eyeIdx === 0) {
-      stair.current = makeStaircase();
+      stair.current = new Staircase();
       setLevel(stair.current.level);
       setEyeIdx(1);
       setPhase("prep");
