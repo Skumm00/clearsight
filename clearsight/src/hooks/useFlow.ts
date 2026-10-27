@@ -1,21 +1,9 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
 import { useFullFlow } from "./useFullFlow";
 
-const subscribe = () => () => {};
-
-export function useQuick() {
-  return useSyncExternalStore(
-    subscribe,
-    () => new URLSearchParams(window.location.search).get("quick") === "1",
-    () => false,
-  );
-}
-
+/** Whether the user started the full screening, plus the query string that carries it to the next step. */
 export function useFlowQuery() {
   const full = useFullFlow();
-  const quick = useQuick();
-  const parts = [full && "flow=full", quick && "quick=1"].filter(Boolean);
-  return { full, quick, qs: parts.length ? `?${parts.join("&")}` : "" };
+  return { full, qs: full ? "?flow=full" : "" };
 }
