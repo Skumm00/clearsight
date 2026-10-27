@@ -1,4 +1,4 @@
-# ClearSight.
+# ClearSight
 
 ClearSight is a free website that lets you check your vision at home and scan a photo of your eye for possible problems. It uses your webcam to measure how far you are from the screen, and a credit card to measure the screen itself, so every test is the right size.
 
