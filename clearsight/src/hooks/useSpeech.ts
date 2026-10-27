@@ -25,7 +25,7 @@ const TEENS: Record<string, number> = {
 const TENS: Record<string, number> = {
   twenty: 20, thirty: 30, forty: 40, fifty: 50, sixty: 60, seventy: 70, eighty: 80, ninety: 90,
 };
-const HOMOPHONES: Record<string, string> = { to: "two", too: "two", for: "four", fore: "four", won: "one", ate: "eight" };
+const HOMOPHONES: Record<string, string> = { to: "two", too: "two", tu: "two", tree: "three", for: "four", fore: "four", won: "one", wan: "one", ate: "eight" };
 
 export function parseSpokenNumber(text: string): number | null {
   const direct = text.match(/\b\d{1,2}\b/);
@@ -48,10 +48,10 @@ export function parseSpokenNumber(text: string): number | null {
 }
 
 const DIRECTION_ALIASES: Record<string, string> = {
-  up: "up", op: "up", upward: "up", top: "up",
-  down: "down", downward: "down", bottom: "down",
-  left: "left", lift: "left",
-  right: "right", write: "right", rite: "right",
+  up: "up", op: "up", app: "up", ap: "up", upper: "up", upward: "up", top: "up",
+  down: "down", dawn: "down", town: "down", downward: "down", bottom: "down",
+  left: "left", lift: "left", lest: "left", loft: "left",
+  right: "right", write: "right", rite: "right", wright: "right", ride: "right",
 };
 
 export function parseSpokenDirection(text: string): string | null {
