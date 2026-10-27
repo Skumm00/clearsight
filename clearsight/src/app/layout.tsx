@@ -9,7 +9,7 @@ const plex = IBM_Plex_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "ClearSight — camera-verified vision screening",
+  title: "ClearSight",
   description:
     "A private, in-browser vision screening that measures your viewing distance with your camera so the test is sized correctly. A screening aid, not a diagnosis.",
 };

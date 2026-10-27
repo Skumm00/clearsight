@@ -19,7 +19,7 @@ export default function Calibrate() {
   const { cal, save } = useCalibration();
   const [i, setI] = useState(0);
   const step = STEPS[i];
-  const { videoRef, state } = useFaceTracker(cal.hfovDeg, step === "distance");
+  const { videoRef, state, retry } = useFaceTracker(cal.hfovDeg, step === "distance");
   // The camera shows its OWN estimate of the distance (iris size + the field of view it assumes).
   // The user then corrects that number to the true distance (from a tape measure), and every correction
   // re-solves the camera's field of view so the app's estimate matches reality from then on.
@@ -97,11 +97,16 @@ export default function Calibrate() {
                   <video ref={videoRef} playsInline muted className="size-full -scale-x-100 object-cover" />
                   {state.status !== "ready" && (
                     <p className="absolute inset-0 grid place-items-center p-4 text-center text-sm text-white/80">
-                      {state.status === "error" ? "The camera could not start. You can skip this step." : "Starting camera…"}
+                      {state.status === "error" ? (state.error ?? "The camera could not start.") : "Starting camera…"}
                     </p>
                   )}
                 </div>
 
+                {state.status === "error" && (
+                  <Button onClick={retry} className="justify-self-center">
+                    Try again
+                  </Button>
+                )}
                 <div className="text-center">
                   <p className="text-xs tracking-wide text-muted uppercase">Measured distance</p>
                   <p className="text-5xl font-light tabular-nums">{hasFace ? `${(measuredCm / 100).toFixed(2)} m` : "—"}</p>

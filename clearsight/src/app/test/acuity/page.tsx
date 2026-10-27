@@ -8,7 +8,7 @@ import { CameraPip } from "@/components/CameraPip";
 import { TumblingE } from "@/components/TumblingE";
 import { useCalibration } from "@/lib/calibration";
 import { SQUINT_RATIO, useFaceTracker } from "@/hooks/useFaceTracker";
-import { parseSpokenDirection, useSpeech } from "@/hooks/useSpeech";
+import { parseSpokenDirection, speechErrorMessage, useSpeech } from "@/hooks/useSpeech";
 import { useLatest } from "@/hooks/useLatest";
 import { useDebouncedProblem } from "@/hooks/useDebouncedProblem";
 import { useFlowQuery } from "@/hooks/useFlow";
@@ -31,7 +31,7 @@ const START_MAX_MM = 1100;
 const PAUSE_BELOW = 0.7;
 const PAUSE_ABOVE = 1.5;
 const RESIZE_AFTER = 0.1;
-const makeStaircase = (quick: boolean) => (quick ? new Staircase(0.6, 0.15, -0.2, 1.3, 3, 10) : new Staircase());
+const makeStaircase = () => new Staircase(0.6, 0.2, -0.2, 1.3, 99, 4, 1, true);
 
 const PAUSE_DELAY_MS = 1500;
 const SQUINT_THRESHOLD = 1 - SQUINT_RATIO;
@@ -44,9 +44,9 @@ const ARROWS: { dir: Direction; icon: typeof ArrowUp }[] = [
 
 export default function AcuityTest() {
   const { cal, loaded } = useCalibration();
-  const { full, quick, qs } = useFlowQuery();
+  const { full, qs } = useFlowQuery();
   const { pressed, flash } = usePressed<Direction>();
-  const { videoRef, state } = useFaceTracker(cal.hfovDeg, loaded);
+  const { videoRef, state, retry } = useFaceTracker(cal.hfovDeg, loaded);
 
   const [eyeIdx, setEyeIdx] = useState(0);
   const [phase, setPhase] = useState<"prep" | "test" | "done">("prep");
@@ -71,7 +71,6 @@ export default function AcuityTest() {
   const stableMm = state.stableDistanceMm;
   const squinting = (eye === "right" ? state.squintRight : state.squintLeft) > SQUINT_THRESHOLD;
   const squintingRef = useLatest(squinting);
-  const quickRef = useLatest(quick);
 
   const [squintShown, setSquintShown] = useState(false);
   useEffect(() => {
@@ -84,11 +83,9 @@ export default function AcuityTest() {
   }, [squinting]);
 
   useEffect(() => {
-    if (stair.current.trials === 0) {
-      stair.current = makeStaircase(quick);
-      setLevel(stair.current.level);
-    }
-  }, [quick]);
+    stair.current = makeStaircase();
+    setLevel(stair.current.level);
+  }, []);
 
   const rawProblem = useMemo(() => {
     if (state.status !== "ready") return null;
@@ -123,7 +120,7 @@ export default function AcuityTest() {
     setResults((r) => ({ ...r, [eye]: entry }));
     saveResults({ acuity: { ...loadResults().acuity, [eye]: entry } });
     if (eyeIdx === 0) {
-      stair.current = makeStaircase(quickRef.current);
+      stair.current = makeStaircase();
       setLevel(stair.current.level);
       setEyeIdx(1);
       setPhase("prep");
@@ -238,7 +235,7 @@ export default function AcuityTest() {
             <div className="flex items-center gap-4 text-sm text-muted">
               <button onClick={() => setVoiceOn((v) => !v)} className="flex items-center gap-2 hover:text-ink">
                 {voiceOn && speech.supported ? <Mic size={16} /> : <MicOff size={16} />}
-                {!speech.supported ? "Voice not supported in this browser" : voiceOn ? (speech.heard ? `Heard: “${speech.heard}”` : "Say up, down, left or right") : "Voice off"}
+                {!speech.supported ? "Voice not supported in this browser. Use Chrome." : speech.error ? speechErrorMessage(speech.error) : voiceOn ? (speech.heard ? `Heard: “${speech.heard}”` : speech.listening ? "Listening. Say up, down, left or right" : "Starting the microphone…") : "Voice off"}
               </button>
               <button onClick={() => setManualEyeCheck((m) => !m)} className="underline">
                 {manualEyeCheck ? "Use camera eye check" : "Skip eye check"}
@@ -256,6 +253,12 @@ export default function AcuityTest() {
           <p className="max-w-lg text-center text-muted">
             The test starts by itself once the camera sees the right distance and your {otherEye} eye closed.
           </p>
+          {state.status === "error" && (
+            <div className="flex flex-col items-center gap-3">
+              <p className="max-w-md text-center text-sm text-warn">{state.error}</p>
+              <Button onClick={retry}>Try again</Button>
+            </div>
+          )}
           <button onClick={() => setManualEyeCheck(true)} className="text-sm text-muted underline">
             Camera can’t see my eye? Skip the eye check
           </button>

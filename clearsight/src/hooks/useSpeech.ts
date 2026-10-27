@@ -64,10 +64,27 @@ export function parseSpokenDirection(text: string): string | null {
  * Hands-free answers via the browser's built-in Web Speech API (free, no API key).
  * In Chrome the audio is processed by Google's speech service; disclose this in the UI.
  */
+const FATAL = new Set(["not-allowed", "service-not-allowed", "audio-capture", "network", "language-not-supported"]);
+
+export function speechErrorMessage(code: string): string {
+  switch (code) {
+    case "not-allowed":
+    case "service-not-allowed":
+      return "Microphone blocked. Click the lock icon in the address bar, allow the microphone, then reload.";
+    case "audio-capture":
+      return "No microphone found, or another app is using it. Check your input device and quit apps that hold the mic.";
+    case "network":
+      return "Voice needs an internet connection (Chrome sends the audio to Google). Use the buttons instead.";
+    default:
+      return "Voice input failed. Use the buttons or arrow keys.";
+  }
+}
+
 export function useSpeech(onHeard: (transcript: string) => void, enabled: boolean) {
   const [supported, setSupported] = useState(true);
   const [listening, setListening] = useState(false);
   const [heard, setHeard] = useState("");
+  const [error, setError] = useState<string | null>(null);
   const recRef = useRef<SpeechRecognitionLike | null>(null);
   const cbRef = useLatest(onHeard);
   const wantRef = useRef(false);
@@ -95,7 +112,13 @@ export function useSpeech(onHeard: (transcript: string) => void, enabled: boolea
       setHeard(text);
       cbRef.current(text);
     };
-    rec.onerror = () => setListening(false);
+    rec.onerror = (e) => {
+      if (FATAL.has(e.error)) {
+        wantRef.current = false;
+        setError(e.error);
+        setListening(false);
+      }
+    };
     rec.onend = () => {
       // Chrome ends sessions on silence; restart while the test wants voice.
       if (wantRef.current) {
@@ -108,6 +131,7 @@ export function useSpeech(onHeard: (transcript: string) => void, enabled: boolea
     };
     recRef.current = rec;
     wantRef.current = true;
+    setError(null);
     try {
       rec.start();
       setListening(true);
@@ -122,5 +146,5 @@ export function useSpeech(onHeard: (transcript: string) => void, enabled: boolea
     return stop;
   }, [enabled, start, stop]);
 
-  return { supported, listening, heard, start, stop };
+  return { supported, listening, heard, error, start, stop };
 }

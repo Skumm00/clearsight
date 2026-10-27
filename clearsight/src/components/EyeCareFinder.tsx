@@ -1,34 +1,55 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ExternalLink, Loader2, MapPin, Navigation, Phone } from "lucide-react";
 import { Button, Card } from "./ui";
-import { findEyeCare, geocodeZip, getBrowserLocation, mapsLink, websiteHref, type CarePlace } from "@/lib/care";
+import { findEyeCare, geocodeZip, getBrowserLocation, mapsLink, SAMPLE_CENTER, savedNearbyCare, websiteHref, type CarePlace } from "@/lib/care";
 
 type Status = "idle" | "locating" | "loading" | "done" | "error";
 
 export function EyeCareFinder() {
   const [status, setStatus] = useState<Status>("idle");
   const [places, setPlaces] = useState<CarePlace[]>([]);
+  const [area, setArea] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [zip, setZip] = useState("");
+  const latest = useRef(0);
 
   const run = async (getOrigin: () => Promise<{ lat: number; lon: number }>) => {
+    const id = ++latest.current;
     setError(null);
+    setArea(null);
+    let origin: { lat: number; lon: number } | null = null;
     try {
       setStatus("locating");
-      const origin = await getOrigin();
+      origin = await getOrigin();
+      if (id !== latest.current) return;
       setStatus("loading");
       const found = await findEyeCare(origin);
+      if (id !== latest.current) return;
       setPlaces(found);
       setStatus("done");
     } catch (e) {
+      if (id !== latest.current) return;
+      const saved = origin ? savedNearbyCare(origin) : null;
+      if (saved) {
+        setPlaces(saved);
+        setStatus("done");
+        return;
+      }
       setError(e instanceof Error ? e.message : "Something went wrong.");
       setStatus("error");
     }
   };
 
+  useEffect(() => {
+    setPlaces(savedNearbyCare(SAMPLE_CENTER) ?? []);
+    setArea("Stoneridge Road, Pleasanton, CA");
+    setStatus("done");
+  }, []);
+
   const busy = status === "locating" || status === "loading";
+  const searching = status === "loading";
 
   return (
     <div className="w-full max-w-2xl">
@@ -54,7 +75,7 @@ export function EyeCareFinder() {
             aria-label="ZIP code"
             className="h-12 w-32 rounded-sm border border-line bg-surface px-3 text-ink placeholder:text-muted"
           />
-          <Button variant="ghost" type="submit" disabled={busy}>
+          <Button variant="ghost" type="submit" disabled={searching}>
             Search
           </Button>
         </form>
@@ -64,7 +85,9 @@ export function EyeCareFinder() {
         Your location is only used to search OpenStreetMap for nearby clinics. Nothing is stored.
       </p>
 
+      {status === "loading" && <p className="mt-4 text-center text-sm text-muted">Searching nearby clinics. This can take up to 15 seconds.</p>}
       {error && <p className="mt-4 text-center text-sm text-danger">{error}</p>}
+      {area && places.length > 0 && <p className="mt-6 text-center text-sm text-muted">Eye care near {area}</p>}
 
       {status === "done" && places.length === 0 && (
         <p className="mt-6 text-center text-muted">

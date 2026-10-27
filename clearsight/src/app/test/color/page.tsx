@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Mic } from "lucide-react";
 import { Button, Card, Instruction, StepFrame } from "@/components/ui";
 import { drawPlate, optionsFor, PLATES } from "@/lib/plates";
-import { parseSpokenNumber, useSpeech } from "@/hooks/useSpeech";
+import { parseSpokenNumber, speechErrorMessage, useSpeech } from "@/hooks/useSpeech";
 import { useLatest } from "@/hooks/useLatest";
 import { saveResults } from "@/lib/results";
 import { useFlowQuery } from "@/hooks/useFlow";
@@ -120,7 +120,7 @@ export default function ColorTest() {
       </div>
       <p className="flex items-center gap-2 text-sm text-muted">
         <Mic size={16} />
-        {!speech.supported ? "Voice not supported in this browser" : speech.heard ? `Heard: “${speech.heard}”` : "Or say the number out loud"}
+        {!speech.supported ? "Voice not supported in this browser. Use Chrome." : speech.error ? speechErrorMessage(speech.error) : speech.heard ? `Heard: “${speech.heard}”` : speech.listening ? "Listening. Say the number out loud" : "Starting the microphone…"}
       </p>
     </StepFrame>
   );

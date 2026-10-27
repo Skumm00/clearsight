@@ -1,3 +1,5 @@
+import { PLEASANTON_SAMPLE, SAMPLE_CENTER } from "@/data/careSample";
+
 export interface CarePlace {
   id: string;
   name: string;
@@ -16,8 +18,9 @@ export interface LatLon {
 }
 
 const OVERPASS = "https://overpass-api.de/api/interpreter";
+const SEARCH_TIMEOUT_MS = 15000;
 
-function haversineKm(a: LatLon, b: LatLon) {
+export function haversineKm(a: LatLon, b: LatLon) {
   const R = 6371;
   const rad = (d: number) => (d * Math.PI) / 180;
   const dLat = rad(b.lat - a.lat);
@@ -38,10 +41,29 @@ export async function geocodeZip(zip: string): Promise<LatLon> {
 export function getBrowserLocation(): Promise<LatLon> {
   return new Promise((resolve, reject) => {
     if (!navigator.geolocation) return reject(new Error("Location is not available in this browser."));
+    // The browser's own timeout only starts after the permission prompt is answered, so add one that always fires.
+    const guard = setTimeout(
+      () => reject(new Error("No answer from the location prompt. Allow location in the address bar, or enter a ZIP code instead.")),
+      12000,
+    );
     navigator.geolocation.getCurrentPosition(
-      (p) => resolve({ lat: p.coords.latitude, lon: p.coords.longitude }),
-      () => reject(new Error("Location permission was denied. Enter a ZIP code instead.")),
-      { timeout: 10000, maximumAge: 5 * 60_000 },
+      (p) => {
+        clearTimeout(guard);
+        resolve({ lat: p.coords.latitude, lon: p.coords.longitude });
+      },
+      (err) => {
+        clearTimeout(guard);
+        reject(
+          new Error(
+            err.code === err.PERMISSION_DENIED
+              ? "Location is blocked. Allow it in the address bar (lock icon) and in macOS Privacy settings, or enter a ZIP code."
+              : err.code === err.TIMEOUT
+                ? "Finding your location took too long. Enter a ZIP code instead."
+                : "Your computer couldn’t work out its location. Enter a ZIP code instead.",
+          ),
+        );
+      },
+      { timeout: 15000, maximumAge: 5 * 60_000 },
     );
   });
 }
@@ -56,7 +78,16 @@ function describeKind(tags: Record<string, string>) {
 export async function findEyeCare(origin: LatLon, radiusM = 10000): Promise<CarePlace[]> {
   const around = `(around:${radiusM},${origin.lat},${origin.lon})`;
   const query = `[out:json][timeout:25];(nwr["healthcare"="optometrist"]${around};nwr["shop"="optician"]${around};nwr["healthcare:speciality"~"ophthalm|optom"]${around};);out center tags 60;`;
-  const res = await fetch(`${OVERPASS}?data=${encodeURIComponent(query)}`);
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), SEARCH_TIMEOUT_MS);
+  let res: Response;
+  try {
+    res = await fetch(`${OVERPASS}?data=${encodeURIComponent(query)}`, { signal: controller.signal });
+  } catch {
+    throw new Error("The clinic directory is busy right now. Please try again in a moment.");
+  } finally {
+    clearTimeout(timer);
+  }
   if (!res.ok) throw new Error("The clinic directory is busy. Please try again in a moment.");
   const json = (await res.json()) as {
     elements: { type: string; id: number; lat?: number; lon?: number; center?: LatLon; tags?: Record<string, string> }[];
@@ -91,3 +122,11 @@ export function mapsLink(p: CarePlace) {
 export function websiteHref(url: string) {
   return /^https?:\/\//.test(url) ? url : `https://${url}`;
 }
+
+/** Saved results for the Pleasanton, CA area, with distances from the given origin. Only used when the origin is nearby. */
+export function savedNearbyCare(origin: LatLon): CarePlace[] | null {
+  if (haversineKm(origin, SAMPLE_CENTER) > 25) return null;
+  return PLEASANTON_SAMPLE.map((p) => ({ ...p, distanceKm: haversineKm(origin, p) })).sort((a, b) => a.distanceKm - b.distanceKm);
+}
+
+export { SAMPLE_CENTER };

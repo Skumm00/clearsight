@@ -61,7 +61,18 @@ export class Staircase {
   private readonly maxReversals: number;
   private readonly maxTrials: number;
 
-  constructor(start = 0.8, step = 0.1, min = -0.2, max = 1.3, maxReversals = 6, maxTrials = 24) {
+  private bestCorrect: number | null = null;
+
+  constructor(
+    start = 0.8,
+    step = 0.1,
+    min = -0.2,
+    max = 1.3,
+    maxReversals = 6,
+    maxTrials = 24,
+    private readonly downNeeded = 2,
+    private readonly useBest = false,
+  ) {
     this.level = start;
     this.step = step;
     this.min = min;
@@ -72,10 +83,12 @@ export class Staircase {
 
   respond(correct: boolean): boolean {
     this.trials++;
+    const asked = this.level;
     let dir: 1 | -1 | 0 = 0;
     if (correct) {
       this.streak++;
-      if (this.streak >= 2) {
+      if (this.bestCorrect === null || asked < this.bestCorrect) this.bestCorrect = asked;
+      if (this.streak >= this.downNeeded) {
         this.streak = 0;
         dir = -1;
       }
@@ -92,6 +105,7 @@ export class Staircase {
   }
 
   threshold(): number {
+    if (this.useBest) return +(this.bestCorrect ?? this.level).toFixed(2);
     const r = this.reversals.slice(-4);
     if (r.length === 0) return this.level;
     return +(r.reduce((a, b) => a + b, 0) / r.length).toFixed(2);

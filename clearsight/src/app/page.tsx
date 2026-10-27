@@ -22,7 +22,7 @@ export default function Home() {
 
       <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col items-center px-6 pt-16 pb-14 text-center">
         <h1 className="max-w-2xl text-4xl leading-[1.2] font-light sm:text-5xl">
-          Screen your vision. Scan your eyes. <b className="font-semibold">Know your next step.</b>
+          ClearSight
         </h1>
         <p className="mt-5 max-w-xl text-lg text-muted">
           Camera-verified vision tests, an AI photo scan and personalized guidance, all in your browser.

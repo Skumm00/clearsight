@@ -101,12 +101,14 @@ export function useFaceTracker(hfovDeg: number, enabled = true) {
       silenceMediaPipeInfo();
       const { FilesetResolver, FaceLandmarker } = await import("@mediapipe/tasks-vision");
       const fileset = await FilesetResolver.forVisionTasks("/mediapipe/wasm");
-      const landmarker: FaceLandmarker = await FaceLandmarker.createFromOptions(fileset, {
-        baseOptions: { modelAssetPath: "/models/face_landmarker.task", delegate: "GPU" },
-        runningMode: "VIDEO",
-        numFaces: 1,
-        outputFaceBlendshapes: true,
-      });
+      const create = (delegate: "GPU" | "CPU") =>
+        FaceLandmarker.createFromOptions(fileset, {
+          baseOptions: { modelAssetPath: "/models/face_landmarker.task", delegate },
+          runningMode: "VIDEO",
+          numFaces: 1,
+          outputFaceBlendshapes: true,
+        });
+      const landmarker: FaceLandmarker = await create("GPU").catch(() => create("CPU"));
 
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: "user", width: { ideal: 1920 }, height: { ideal: 1080 } },
@@ -243,7 +245,17 @@ export function useFaceTracker(hfovDeg: number, enabled = true) {
         landmarker.close();
       };
     } catch (e) {
-      const message = e instanceof Error ? e.message : "Camera could not be started";
+      const name = e instanceof Error ? e.name : "";
+      const message =
+        name === "NotAllowedError"
+          ? "Camera blocked. Allow it in the address bar (lock icon) and in System Settings > Privacy > Camera."
+          : name === "NotReadableError" || name === "AbortError"
+            ? "The camera is in use by another app (OBS, Zoom, FaceTime or a recorder). Close it or turn off its camera, then press Try again."
+            : name === "NotFoundError"
+              ? "No camera found. Check that it is connected."
+              : e instanceof Error
+                ? e.message
+                : "The camera could not start.";
       setState((s) => ({ ...s, status: "error", error: message }));
     }
   }, [hfovRef]);
@@ -254,5 +266,10 @@ export function useFaceTracker(hfovDeg: number, enabled = true) {
     return () => stopRef.current();
   }, [enabled, start]);
 
-  return { videoRef, state };
+  const retry = useCallback(() => {
+    stopRef.current();
+    start();
+  }, [start]);
+
+  return { videoRef, state, retry };
 }
