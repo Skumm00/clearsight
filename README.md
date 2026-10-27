@@ -6,7 +6,7 @@ It is a first check, not a diagnosis. It does not replace an eye doctor.
 
 ## Who it is for
 
-People who can't easily get to an eye doctor, because of cost or scheduling. It is meant to help catch problems early and to show when it is time to book an exam.
+People who can't easily get to an eye doctor, because of cost or scheduling. It is meant to help catch problems early and to show when it is time to book an exam. Our target audience are young people who may suffer eye related problems and not know it, as well as the elderly.
 
 ## What it does
 
