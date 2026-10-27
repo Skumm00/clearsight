@@ -95,8 +95,10 @@ export function useFaceTracker(hfovDeg: number, enabled = true) {
 
   const stopRef = useRef<() => void>(() => {});
 
-  const start = useCallback(async () => {
+  const start = useCallback(async (session: { cancelled: boolean }) => {
     setState((s) => ({ ...s, status: "loading", error: undefined }));
+    let stream: MediaStream | undefined;
+    let landmarker: FaceLandmarker | undefined;
     try {
       silenceMediaPipeInfo();
       const { FilesetResolver, FaceLandmarker } = await import("@mediapipe/tasks-vision");
@@ -108,17 +110,28 @@ export function useFaceTracker(hfovDeg: number, enabled = true) {
           numFaces: 1,
           outputFaceBlendshapes: true,
         });
-      const landmarker: FaceLandmarker = await create("GPU").catch(() => create("CPU"));
+      landmarker = await create("GPU").catch(() => create("CPU"));
+      if (session.cancelled) return landmarker.close();
 
-      const stream = await navigator.mediaDevices.getUserMedia({
+      stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: "user", width: { ideal: 1920 }, height: { ideal: 1080 } },
         audio: false,
       });
+      if (session.cancelled) {
+        stream.getTracks().forEach((t) => t.stop());
+        return landmarker.close();
+      }
       const video = videoRef.current;
       if (!video) throw new Error("Video element missing");
       video.srcObject = stream;
       await video.play();
+      if (session.cancelled) {
+        stream.getTracks().forEach((t) => t.stop());
+        return landmarker.close();
+      }
 
+      const tracker = landmarker;
+      const feed = stream;
       let raf = 0;
       let alive = true;
       let lastTs = -1;
@@ -141,7 +154,7 @@ export function useFaceTracker(hfovDeg: number, enabled = true) {
         if (video.readyState < 2 || video.currentTime === lastTs) return;
         lastTs = video.currentTime;
         const now = performance.now();
-        const res = landmarker.detectForVideo(video, now);
+        const res = tracker.detectForVideo(video, now);
         const lm = res.faceLandmarks[0];
         if (!lm) {
           setState((s) => (s.faceFound ? { ...s, faceFound: false, distanceMm: null } : s));
@@ -241,10 +254,13 @@ export function useFaceTracker(hfovDeg: number, enabled = true) {
       stopRef.current = () => {
         alive = false;
         cancelAnimationFrame(raf);
-        stream.getTracks().forEach((t) => t.stop());
-        landmarker.close();
+        feed.getTracks().forEach((t) => t.stop());
+        tracker.close();
       };
     } catch (e) {
+      stream?.getTracks().forEach((t) => t.stop());
+      landmarker?.close();
+      if (session.cancelled) return;
       const name = e instanceof Error ? e.name : "";
       const message =
         name === "NotAllowedError"
@@ -260,16 +276,28 @@ export function useFaceTracker(hfovDeg: number, enabled = true) {
     }
   }, [hfovRef]);
 
+  const sessionRef = useRef({ cancelled: false });
+
+  const launch = useCallback(() => {
+    sessionRef.current.cancelled = true;
+    stopRef.current();
+    stopRef.current = () => {};
+    const session = { cancelled: false };
+    sessionRef.current = session;
+    start(session);
+  }, [start]);
+
   useEffect(() => {
     if (!enabled) return;
-    start();
-    return () => stopRef.current();
-  }, [enabled, start]);
+    launch();
+    return () => {
+      sessionRef.current.cancelled = true;
+      stopRef.current();
+      stopRef.current = () => {};
+    };
+  }, [enabled, launch]);
 
-  const retry = useCallback(() => {
-    stopRef.current();
-    start();
-  }, [start]);
+  const retry = launch;
 
   return { videoRef, state, retry };
 }
