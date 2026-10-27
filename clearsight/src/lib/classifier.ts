@@ -25,7 +25,7 @@ function load() {
     if (!metaRes.ok) throw new ModelMissingError();
     const meta = (await metaRes.json()) as Meta;
 
-    const ort = await import("onnxruntime-web");
+    const ort = await import("onnxruntime-web/wasm");
     ort.env.wasm.wasmPaths = "/ort/";
     ort.env.wasm.numThreads = 1; // single thread: no cross-origin isolation headers required
     const session = await ort.InferenceSession.create("/models/eye_classifier.onnx", { executionProviders: ["wasm"] });
