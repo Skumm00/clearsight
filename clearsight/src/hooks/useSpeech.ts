@@ -92,8 +92,10 @@ export function useSpeech(onHeard: (guesses: string[]) => void, enabled: boolean
   const wantRef = useRef(false);
 
   const stop = useCallback(() => {
+    const rec = recRef.current;
+    recRef.current = null;
     wantRef.current = false;
-    recRef.current?.stop();
+    rec?.stop();
     setListening(false);
   }, []);
 
@@ -110,6 +112,7 @@ export function useSpeech(onHeard: (guesses: string[]) => void, enabled: boolean
     rec.maxAlternatives = 3;
     rec.lang = "en-US";
     rec.onresult = (e) => {
+      if (recRef.current !== rec) return;
       for (let i = e.resultIndex; i < e.results.length; i++) {
         const result = e.results[i];
         if (!result.isFinal) continue;
@@ -120,21 +123,39 @@ export function useSpeech(onHeard: (guesses: string[]) => void, enabled: boolean
       }
     };
     rec.onerror = (e) => {
+      if (recRef.current !== rec) return;
       if (FATAL.has(e.error)) {
         wantRef.current = false;
         setError(e.error);
         setListening(false);
       }
     };
+    const restarts: number[] = [];
     rec.onend = () => {
-      // Chrome ends sessions on silence; restart while the test wants voice.
-      if (wantRef.current) {
+      // A replaced or stopped recognizer must never restart itself, or two would answer at once.
+      if (recRef.current !== rec) return;
+      if (!wantRef.current) {
+        setListening(false);
+        return;
+      }
+      // Chrome ends sessions on silence, so restart while the test wants voice, but give up on a restart loop.
+      const now = Date.now();
+      restarts.push(now);
+      while (restarts.length && now - restarts[0] > 5000) restarts.shift();
+      if (restarts.length > 8) {
+        wantRef.current = false;
+        setError("unknown");
+        setListening(false);
+        return;
+      }
+      setTimeout(() => {
+        if (recRef.current !== rec || !wantRef.current) return;
         try {
           rec.start();
         } catch {
           /* already started */
         }
-      } else setListening(false);
+      }, 200);
     };
     recRef.current = rec;
     wantRef.current = true;
