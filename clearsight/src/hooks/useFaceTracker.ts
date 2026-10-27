@@ -19,6 +19,8 @@ export const SQUINT_RATIO = 0.74;
 /** An eye counts as "closed / covered" only after staying closed this long, so ordinary blinks are ignored. */
 const HOLD_MS = 450;
 const BLINK_MAX_MS = 600;
+/** React is updated at most this often. Camera frames are analyzed faster, but redrawing every frame only slows the page. */
+const STATE_PUSH_MS = 66;
 
 export interface FaceState {
   status: "idle" | "loading" | "ready" | "error";
@@ -145,6 +147,8 @@ export function useFaceTracker(hfovDeg: number, enabled = true) {
       let baseL = 0.26;
       let baseR = 0.26;
       let bothSince = 0;
+      let lastPush = 0;
+      let lastFlags = "";
       let blinks = 0;
       const blinkTimes: number[] = [];
 
@@ -220,6 +224,12 @@ export function useFaceTracker(hfovDeg: number, enabled = true) {
 
         const cats = res.faceBlendshapes?.[0]?.categories ?? [];
         const bs = (name: string) => cats.find((c) => c.categoryName === name)?.score ?? 0;
+
+        // Push instantly when something discrete changes (eye closed, blink counted), otherwise about 15 times a second.
+        const flags = `${leftHeld}${rightHeld}${blinks}`;
+        if (flags === lastFlags && now - lastPush < STATE_PUSH_MS) return;
+        lastFlags = flags;
+        lastPush = now;
 
         setState({
           status: "ready",
