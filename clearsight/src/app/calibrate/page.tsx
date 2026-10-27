@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Minus, Plus, Sun, ShieldAlert } from "lucide-react";
+import { Sun, ShieldAlert } from "lucide-react";
 import { Button, Dots, Instruction, StepFrame } from "@/components/ui";
 import { useCalibration, cardFramePx } from "@/lib/calibration";
 import { CARD_WIDTH_MM } from "@/lib/vision";
