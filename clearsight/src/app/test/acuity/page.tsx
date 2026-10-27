@@ -228,6 +228,11 @@ export default function AcuityTest() {
               ))}
             </div>
             <div className="flex items-center gap-4 text-sm text-muted">
+              {speech.error && (
+                <button onClick={speech.retry} className="text-accent underline">
+                  Try voice again
+                </button>
+              )}
               <button onClick={() => setVoiceOn((v) => !v)} className="flex items-center gap-2 hover:text-ink">
                 {voiceOn && speech.supported ? <Mic size={16} /> : <MicOff size={16} />}
                 {!speech.supported ? "Voice not supported in this browser. Use Chrome." : speech.error ? speechErrorMessage(speech.error) : voiceOn ? (speech.heard ? `Heard: “${speech.heard}”` : speech.listening ? "Listening. Say up, down, left or right" : "Starting the microphone…") : "Voice off"}

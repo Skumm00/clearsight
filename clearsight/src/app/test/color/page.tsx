@@ -123,6 +123,11 @@ export default function ColorTest() {
       <p className="flex items-center gap-2 text-sm text-muted">
         <Mic size={16} />
         {!speech.supported ? "Voice not supported in this browser. Use Chrome." : speech.error ? speechErrorMessage(speech.error) : speech.heard ? `Heard: “${speech.heard}”` : speech.listening ? "Listening. Say the number out loud" : "Starting the microphone…"}
+        {speech.error && (
+          <button onClick={speech.retry} className="text-accent underline">
+            Try voice again
+          </button>
+        )}
       </p>
     </StepFrame>
   );

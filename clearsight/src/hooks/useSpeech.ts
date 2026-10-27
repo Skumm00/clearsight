@@ -174,5 +174,10 @@ export function useSpeech(onHeard: (guesses: string[]) => void, enabled: boolean
     return stop;
   }, [enabled, start, stop]);
 
-  return { supported, listening, heard, error, start, stop };
+  const retry = useCallback(() => {
+    stop();
+    start();
+  }, [start, stop]);
+
+  return { supported, listening, heard, error, retry };
 }
