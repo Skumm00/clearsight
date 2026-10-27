@@ -1,6 +1,6 @@
 <img width="1440" height="773" alt="Screenshot 2026-10-26 at 6 48 40 PM" src="https://github.com/user-attachments/assets/de44cfdd-4ad7-4824-989a-e59d7352c729" />
 
-ClearSight is a free website that lets you check your vision at home and scan a photo of your eye for possible problems. It uses your webcam to measure how far you are from the screen, and a credit card to measure the screen itself, so every test is the right size.
+ClearSight is a free website that lets you check your vision at home and scan a photo of your eye for possible problems. It uses your webcam to measure how far you are from the screen, and a credit card to measure the screen itself, so every test is the right size. The Webcam Video is stored in the browser, and we do NOT collect any information regarding the user, as this has NO server and database.
 
 It is a first check, not a diagnosis. It does not replace an eye doctor.
 
