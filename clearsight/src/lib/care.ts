@@ -17,8 +17,6 @@ export interface LatLon {
   lon: number;
 }
 
-const OVERPASS = "https://overpass-api.de/api/interpreter";
-const SEARCH_TIMEOUT_MS = 15000;
 
 export function haversineKm(a: LatLon, b: LatLon) {
   const R = 6371;
@@ -75,30 +73,49 @@ function describeKind(tags: Record<string, string>) {
   return "Eye care";
 }
 
-export async function findEyeCare(origin: LatLon, radiusM = 10000): Promise<CarePlace[]> {
-  const around = `(around:${radiusM},${origin.lat},${origin.lon})`;
-  const query = `[out:json][timeout:25];(nwr["healthcare"="optometrist"]${around};nwr["shop"="optician"]${around};nwr["healthcare:speciality"~"ophthalm|optom"]${around};);out center tags 60;`;
+const OVERPASS_HOSTS = [
+  "https://overpass-api.de/api/interpreter",
+  "https://overpass.kumi.systems/api/interpreter",
+  "https://overpass.private.coffee/api/interpreter",
+];
+const OVERPASS_TIMEOUT_MS = 9000;
+const NOT_EYE_CARE = /sunglass|oakley|solaris|ray-?ban/i;
+
+type OverpassElement = { type: string; id: number; lat?: number; lon?: number; center?: LatLon; tags?: Record<string, string> };
+
+function boundingBox(origin: LatLon, radiusKm: number) {
+  const dLat = radiusKm / 111;
+  const dLon = radiusKm / (111 * Math.cos((origin.lat * Math.PI) / 180));
+  return { south: origin.lat - dLat, north: origin.lat + dLat, west: origin.lon - dLon, east: origin.lon + dLon };
+}
+
+/** Asks several Overpass servers at once and uses whichever answers first. */
+async function queryOverpass(origin: LatLon, radiusKm: number): Promise<OverpassElement[]> {
+  const { south, west, north, east } = boundingBox(origin, radiusKm);
+  const query = `[out:json][timeout:8][bbox:${south},${west},${north},${east}];(nwr["healthcare"="optometrist"];nwr["shop"="optician"];nwr["healthcare:speciality"~"ophthalm|optom"];);out center tags 60;`;
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), SEARCH_TIMEOUT_MS);
-  let res: Response;
+  const timer = setTimeout(() => controller.abort(), OVERPASS_TIMEOUT_MS);
   try {
-    res = await fetch(`${OVERPASS}?data=${encodeURIComponent(query)}`, { signal: controller.signal });
-  } catch {
-    throw new Error("The clinic directory is busy right now. Please try again in a moment.");
+    return await Promise.any(
+      OVERPASS_HOSTS.map(async (host) => {
+        const res = await fetch(`${host}?data=${encodeURIComponent(query)}`, { signal: controller.signal });
+        if (!res.ok) throw new Error(`Overpass ${res.status}`);
+        return ((await res.json()) as { elements: OverpassElement[] }).elements;
+      }),
+    );
   } finally {
     clearTimeout(timer);
+    controller.abort();
   }
-  if (!res.ok) throw new Error("The clinic directory is busy. Please try again in a moment.");
-  const json = (await res.json()) as {
-    elements: { type: string; id: number; lat?: number; lon?: number; center?: LatLon; tags?: Record<string, string> }[];
-  };
+}
 
+function fromOverpass(elements: OverpassElement[], origin: LatLon): CarePlace[] {
   const places: CarePlace[] = [];
-  for (const e of json.elements) {
+  for (const e of elements) {
     const t = e.tags ?? {};
     const lat = e.lat ?? e.center?.lat;
     const lon = e.lon ?? e.center?.lon;
-    if (!t.name || lat === undefined || lon === undefined) continue;
+    if (!t.name || lat === undefined || lon === undefined || NOT_EYE_CARE.test(t.name)) continue;
     const address = [[t["addr:housenumber"], t["addr:street"]].filter(Boolean).join(" "), t["addr:city"]].filter(Boolean).join(", ");
     places.push({
       id: `${e.type}${e.id}`,
@@ -111,6 +128,70 @@ export async function findEyeCare(origin: LatLon, radiusM = 10000): Promise<Care
       lat,
       lon,
     });
+  }
+  return places;
+}
+
+interface NominatimResult {
+  osm_type: string;
+  osm_id: number;
+  lat: string;
+  lon: string;
+  name?: string;
+  type?: string;
+  display_name: string;
+  address?: { house_number?: string; road?: string; city?: string; town?: string };
+}
+
+/** Backup source: Nominatim answers quickly and covers fewer places, with no phone numbers or websites. */
+async function queryNominatim(origin: LatLon, radiusKm: number): Promise<CarePlace[]> {
+  const { south, west, north, east } = boundingBox(origin, radiusKm);
+  const search = async (q: string) => {
+    const url =
+      `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=jsonv2&addressdetails=1&limit=30&bounded=1` +
+      `&viewbox=${west},${north},${east},${south}`;
+    const res = await fetch(url, { headers: { Accept: "application/json" } });
+    if (!res.ok) throw new Error(`Nominatim ${res.status}`);
+    return (await res.json()) as NominatimResult[];
+  };
+  const [optometrists, opticians] = await Promise.all([search("optometrist"), search("optician")]);
+  const seen = new Set<string>();
+  const places: CarePlace[] = [];
+  for (const r of [...optometrists, ...opticians]) {
+    const id = `${r.osm_type}${r.osm_id}`;
+    const name = r.name ?? r.display_name.split(",")[0];
+    if (seen.has(id) || NOT_EYE_CARE.test(name)) continue;
+    seen.add(id);
+    const lat = Number(r.lat);
+    const lon = Number(r.lon);
+    const a = r.address ?? {};
+    places.push({
+      id,
+      name,
+      kind: r.type === "optician" ? "Optician / eyewear" : "Optometrist",
+      address: [[a.house_number, a.road].filter(Boolean).join(" "), a.city ?? a.town].filter(Boolean).join(", "),
+      distanceKm: haversineKm(origin, { lat, lon }),
+      lat,
+      lon,
+    });
+  }
+  return places;
+}
+
+/** Nearby optometrists, opticians and ophthalmologists from OpenStreetMap data (coverage varies by area). */
+export async function findEyeCare(origin: LatLon, radiusKm = 10): Promise<CarePlace[]> {
+  let places: CarePlace[] = [];
+  try {
+    places = fromOverpass(await queryOverpass(origin, radiusKm), origin);
+  } catch {
+    /* every Overpass server was busy or slow, so use the backup source below */
+  }
+  if (places.length === 0) {
+    try {
+      places = await queryNominatim(origin, radiusKm);
+    } catch {
+      throw new Error("The clinic directory is busy right now. Please try again in a moment.");
+    }
   }
   return places.sort((a, b) => a.distanceKm - b.distanceKm).slice(0, 12);
 }

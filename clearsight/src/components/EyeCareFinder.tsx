@@ -85,7 +85,7 @@ export function EyeCareFinder() {
         Your location is only used to search OpenStreetMap for nearby clinics. Nothing is stored.
       </p>
 
-      {status === "loading" && <p className="mt-4 text-center text-sm text-muted">Searching nearby clinics. This can take up to 15 seconds.</p>}
+      {status === "loading" && <p className="mt-4 text-center text-sm text-muted">Searching nearby clinics. This can take up to 10 seconds.</p>}
       {error && <p className="mt-4 text-center text-sm text-danger">{error}</p>}
       {area && places.length > 0 && <p className="mt-6 text-center text-sm text-muted">Eye care near {area}</p>}
 
