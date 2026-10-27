@@ -39,10 +39,12 @@ export default function ColorTest() {
   const chooseRef = useLatest(choose);
   const optionsRef = useLatest(options);
 
-  const speech = useSpeech((text) => {
-    if (/\b(nothing|none|no number)\b/i.test(text)) return chooseRef.current(null);
-    const n = parseSpokenNumber(text);
-    if (n !== null && optionsRef.current.includes(n)) chooseRef.current(n);
+  const speech = useSpeech((guesses) => {
+    for (const text of guesses) {
+      if (/\b(nothing|none|no number)\b/i.test(text)) return chooseRef.current(null);
+      const n = parseSpokenNumber(text);
+      if (n !== null && optionsRef.current.includes(n)) return chooseRef.current(n);
+    }
   }, !done);
 
   useEffect(() => {

@@ -138,9 +138,11 @@ export default function AcuityTest() {
 
   const answerRef = useLatest(answer);
 
-  const speech = useSpeech((text) => {
-    const d = parseSpokenDirection(text);
-    if (d) answerRef.current(d as Direction);
+  const speech = useSpeech((guesses) => {
+    for (const text of guesses) {
+      const d = parseSpokenDirection(text);
+      if (d) return answerRef.current(d as Direction);
+    }
   }, voiceOn && phase === "test");
 
   useEffect(() => {

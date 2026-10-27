@@ -7,6 +7,7 @@ import { useLatest } from "./useLatest";
 interface SpeechRecognitionLike extends EventTarget {
   continuous: boolean;
   interimResults: boolean;
+  maxAlternatives: number;
   lang: string;
   start(): void;
   stop(): void;
@@ -80,7 +81,8 @@ export function speechErrorMessage(code: string): string {
   }
 }
 
-export function useSpeech(onHeard: (transcript: string) => void, enabled: boolean) {
+/** Calls onHeard with every guess the browser has for each finished phrase, best guess first. */
+export function useSpeech(onHeard: (guesses: string[]) => void, enabled: boolean) {
   const [supported, setSupported] = useState(true);
   const [listening, setListening] = useState(false);
   const [heard, setHeard] = useState("");
@@ -105,12 +107,17 @@ export function useSpeech(onHeard: (transcript: string) => void, enabled: boolea
     const rec = new Rec();
     rec.continuous = true;
     rec.interimResults = false;
+    rec.maxAlternatives = 3;
     rec.lang = "en-US";
     rec.onresult = (e) => {
-      const result = e.results[e.resultIndex];
-      const text = result[0].transcript.trim();
-      setHeard(text);
-      cbRef.current(text);
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        const result = e.results[i];
+        if (!result.isFinal) continue;
+        const guesses = Array.from({ length: result.length }, (_, k) => result[k].transcript.trim()).filter(Boolean);
+        if (guesses.length === 0) continue;
+        setHeard(guesses[0]);
+        cbRef.current(guesses);
+      }
     };
     rec.onerror = (e) => {
       if (FATAL.has(e.error)) {
